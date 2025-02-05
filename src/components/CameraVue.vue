@@ -15,25 +15,11 @@
     <div class="photo-gallery">
       <h3>Photos enregistrées :</h3>
       <div v-if="photos.length > 0" class="photo-grid">
-        <div
-          v-for="(photo, index) in photos"
-          :key="index"
-          class="photo-wrapper"
-          @mouseover="hoveredPhoto = index"
-          @mouseleave="hoveredPhoto = null"
-          @focusin="hoveredPhoto = index"
-          @focusout="hoveredPhoto = null"
-        >
-          <img
-            :src="photo"
-            class="photo-thumbnail"
-            :alt="'Photo enregistrée ' + (index + 1)"
-          />
-          <button
-            v-if="hoveredPhoto === index"
-            class="delete-button"
-            @click="deletePhoto(index)"
-          >
+        <div v-for="(photo, index) in photos" :key="index" class="photo-wrapper"
+        @mouseover="hoveredPhoto = index" @mouseleave="hoveredPhoto = null"
+        @focusin="hoveredPhoto = index" @focusout="hoveredPhoto = null">
+          <img :src="photo" class="photo-thumbnail" :alt="'Photo enregistrée ' + (index + 1)" />
+          <button v-if="hoveredPhoto === index" class="delete-button" @click="deletePhoto(index)">
             ❌
           </button>
         </div>
@@ -117,29 +103,28 @@ export default {
       }
     },
     async requestNotificationPermission() {
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') return true;
-        if (Notification.permission !== 'denied') {
-          const permission = await Notification.requestPermission();
-          return permission === 'granted';
-        }
+      if (!('Notification' in window)) return false;
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission !== 'denied') {
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
       }
       return false;
     },
     async showNotification() {
       if (await this.requestNotificationPermission()) {
-        const notification = new Notification('Photo prise !', {
+        // eslint-disable-next-line no-new
+        new Notification('Photo prise !', {
           body: 'Votre photo a été capturée avec succès.',
           icon: this.photo,
-          vibrate: [200, 100, 200], // Vibration en millisecondes
-
         });
+
         navigator.vibrate([200, 100, 200]); // Séquence de vibration
       } else {
         alert('Votre appareil ne supporte pas la vibration.');
       }
-      return null; // Ajout d'un return pour assurer un retour de valeur
     },
+
   },
   mounted() {
     this.requestNotificationPermission();
