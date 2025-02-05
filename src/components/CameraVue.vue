@@ -119,7 +119,11 @@ export default {
           icon: this.photo,
         });
 
-        navigator.vibrate([200, 100, 200]); // Séquence de vibration
+        if ('vibrate' in navigator) {
+          navigator.vibrate([500, 200, 500]); // Augmentation de la durée
+        } else {
+          console.log('La vibration n\'est pas supportée sur cet appareil.');
+        }
       } else {
         alert('Votre appareil ne supporte pas la vibration.');
       }
