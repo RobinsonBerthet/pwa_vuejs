@@ -128,10 +128,15 @@ export default {
     },
     async showNotification() {
       if (await this.requestNotificationPermission()) {
-        return new Notification('Photo prise !', {
+        const notification = new Notification('Photo prise !', {
           body: 'Votre photo a été capturée avec succès.',
           icon: this.photo,
+          vibrate: [200, 100, 200], // Vibration en millisecondes
+
         });
+        navigator.vibrate([200, 100, 200]); // Séquence de vibration
+      } else {
+        alert('Votre appareil ne supporte pas la vibration.');
       }
       return null; // Ajout d'un return pour assurer un retour de valeur
     },

@@ -28,7 +28,7 @@ export default {
           };
         },
         (error) => {
-          console.error('Erreur lors de la récupération de la position :', error);
+          // console.error('Erreur lors de la récupération de la position :', error);
           alert(`Erreur : ${this.getGeolocationErrorMessage(error)}`);
         },
       );
