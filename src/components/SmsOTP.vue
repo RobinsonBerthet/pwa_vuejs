@@ -1,3 +1,10 @@
+<template>
+    <div>
+        <input ref="otpInput" v-model="otpCode" autocomplete="one-time-code"
+        placeholder="Entrez le code OTP" />
+    </div>
+</template>
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
@@ -34,9 +41,3 @@ onUnmounted(() => {
   // Nettoyage en cas de changement de page
 });
 </script>
-
-<template>
-  <div>
-    <input v-model="otpCode" placeholder="Entrez le code OTP" />
-  </div>
-</template>
