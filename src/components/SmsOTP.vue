@@ -1,7 +1,8 @@
 <template>
   <div>
     <form>
-      <input v-model="otpCode" autocomplete="one-time-code" ref="otpInput" placeholder="OTP" required/>
+      <input v-model="otpCode" autocomplete="one-time-code"
+      ref="otpInput" placeholder="OTP" required/>
       <input type="submit">
     </form>
   </div>
