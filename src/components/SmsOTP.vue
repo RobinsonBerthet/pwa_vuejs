@@ -1,7 +1,7 @@
 <template>
   <div>
     <form>
-      <input v-model="otpCode" autocomplete="one-time-code" placeholder="OTP" required/>
+      <input v-model="otpCode" autocomplete="one-time-code" ref="otpInput" placeholder="OTP" required/>
       <input type="submit">
     </form>
   </div>
@@ -11,19 +11,20 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const otpCode = ref('');
+const otpInput = ref(null);
 let abortController;
 
 const startOTPListener = () => {
   if ('OTPCredential' in window) {
-    const input = document.querySelector('input[autocomplete="one-time-code"]');
-    if (!input) return;
-
     abortController = new AbortController();
     const { signal } = abortController;
 
     navigator.credentials.get({ otp: { transport: ['sms'] }, signal })
       .then((otp) => {
         otpCode.value = otp.code;
+        if (otpInput.value) {
+          otpInput.value.value = otp.code; // Remplissage direct de l'input
+        }
         alert(`Code OTP reçu : ${otp.code}`);
       })
       .catch((err) => console.log('Erreur OTP :', err));
