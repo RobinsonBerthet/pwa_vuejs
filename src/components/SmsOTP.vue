@@ -1,14 +1,15 @@
 <template>
     <div>
-        <input ref="otpInput" v-model="otpCode" autocomplete="one-time-code"
+      <input ref="otpInput" v-model="otpCode" autocomplete="one-time-code"
         placeholder="Entrez le code OTP" />
     </div>
-</template>
+  </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const otpCode = ref('');
+let abortController = null;
 
 const startOTPListener = () => {
   if (!('OTPCredential' in window)) {
@@ -16,22 +17,27 @@ const startOTPListener = () => {
     return;
   }
 
-  const ac = new AbortController();
+  abortController = new AbortController();
+
   navigator.credentials
     .get({
       otp: { transport: ['sms'] },
-      signal: ac.signal,
+      signal: abortController.signal,
     })
     .then((otp) => {
-      alert('Code OTP reçu:', otp);
-      otpCode.value = otp.code; // Vérifie si otp.code est défini
+      if (otp && otp.code) {
+        console.log('Code OTP reçu:', otp.code);
+        otpCode.value = otp.code;
+      } else {
+        console.warn('OTP reçu mais invalide:', otp);
+      }
     })
     .catch((err) => {
       console.error('Erreur WebOTP:', err);
     });
 
-  // Arrêter l'écoute après un certain temps pour éviter les fuites de mémoire
-  setTimeout(() => ac.abort(), 60_000);
+  // Arrêter l'écoute après 60 secondes
+  setTimeout(() => abortController?.abort(), 60_000);
 };
 
 onMounted(() => {
@@ -40,5 +46,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   // Nettoyage en cas de changement de page
+  abortController?.abort();
 });
 </script>
