@@ -23,7 +23,8 @@ const startOTPListener = () => {
       signal: ac.signal,
     })
     .then((otp) => {
-      otpCode.value = otp.code;
+      alert('Code OTP reçu:', otp);
+      otpCode.value = otp.code; // Vérifie si otp.code est défini
     })
     .catch((err) => {
       console.error('Erreur WebOTP:', err);
