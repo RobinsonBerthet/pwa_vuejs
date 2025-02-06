@@ -120,7 +120,7 @@ export default {
         });
 
         if ('vibrate' in navigator) {
-          navigator.vibrate([500, 200, 500]); // Augmentation de la durée
+          navigator.vibrate([500, 200, 500]);
         } else {
           console.log('La vibration n\'est pas supportée sur cet appareil.');
         }

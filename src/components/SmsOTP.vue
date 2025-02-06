@@ -1,41 +1,32 @@
 <template>
-    <div>
-        <form>
-            <input autocomplete="one-time-code" placeholder="OTP" inputmode="numeric" required/>
-            <input type="submit">
-        </form>
-    </div>
-  </template>
+  <div>
+    <form>
+      <input v-model="otpCode" autocomplete="one-time-code" placeholder="OTP" required/>
+      <input type="submit">
+    </form>
+  </div>
+</template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const otpCode = ref('');
-const abortController = null;
+let abortController;
 
 const startOTPListener = () => {
   if ('OTPCredential' in window) {
-    window.addEventListener('DOMContentLoaded', (e) => {
-      const input = document.querySelector('input[autocomplete="one-time-code"]');
-      if (!input) return;
-      const ac = new AbortController();
-      const form = input.closest('form');
-      if (form) {
-        form.addEventListener('submit', (event) => {
-          ac.abort();
-        });
-      }
-      navigator.credentials.get({
-        otp: { transport: ['sms'] },
-        signal: ac.signal,
-      }).then((otp) => {
-        input.value = otp.code;
+    const input = document.querySelector('input[autocomplete="one-time-code"]');
+    if (!input) return;
+
+    abortController = new AbortController();
+    const { signal } = abortController;
+
+    navigator.credentials.get({ otp: { transport: ['sms'] }, signal })
+      .then((otp) => {
+        otpCode.value = otp.code;
         alert(`Code OTP reçu : ${otp.code}`);
-        if (form) form.submit();
-      }).catch((err) => {
-        console.log(err);
-      });
-    });
+      })
+      .catch((err) => console.log('Erreur OTP :', err));
   }
 };
 
@@ -44,7 +35,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  // Nettoyage en cas de changement de page
   abortController?.abort();
 });
 </script>
