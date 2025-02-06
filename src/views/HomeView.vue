@@ -2,7 +2,7 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
     <p>
-      Page d'accueil test12345
+      Page d'accueil
     </p>
   </div>
 

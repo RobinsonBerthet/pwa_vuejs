@@ -1,12 +1,13 @@
 <template>
   <div>
     <form>
+      <!-- Champ OTP -->
       <input v-model="otpCode" autocomplete="one-time-code" ref="otpInput"
       placeholder="OTP" required />
       <input type="submit">
     </form>
 
-    <!-- Affichage des logs pour debug sur mobile -->
+    <!-- Affichage des logs pour debug -->
     <div v-for="log in logs" :key="log" style="background: #eee; padding: 5px; margin: 2px;">
       {{ log }}
     </div>
@@ -29,6 +30,7 @@ const logMessage = (message) => {
   logs.value.push(message);
 };
 
+// Fonction pour démarrer l'écoute de l'OTP
 const startOTPListener = () => {
   logMessage('📡 Détection OTP en cours...');
 
@@ -40,21 +42,25 @@ const startOTPListener = () => {
 
     navigator.credentials.get({ otp: { transport: ['sms'] }, signal })
       .then(async (otp) => {
-        logMessage(`🎉 OTP reçu : ${otp.code}`);
+        if (otp && otp.code) {
+          logMessage(`🎉 OTP reçu : ${otp.code}`);
 
-        otpCode.value = otp.code;
+          otpCode.value = otp.code;
 
-        await nextTick(); // S'assurer que le DOM est mis à jour
+          await nextTick(); // S'assurer que le DOM est mis à jour
 
-        if (otpInput.value) {
-          otpInput.value.value = otp.code;
-          otpInput.value.focus();
-          logMessage(`📝 Input rempli avec OTP : ${otpInput.value.value}`);
+          if (otpInput.value) {
+            otpInput.value.value = otp.code;
+            otpInput.value.focus();
+            logMessage(`📝 Input rempli avec OTP : ${otpInput.value.value}`);
+          } else {
+            logMessage('⚠️ Ref otpInput non définie !');
+          }
+
+          alert(`Code OTP reçu : ${otp.code}`);
         } else {
-          logMessage('⚠️ Ref otpInput non définie !');
+          logMessage('⚠️ Aucun OTP ou format incorrect reçu.');
         }
-
-        alert(`Code OTP reçu : ${otp.code}`);
       })
       .catch((err) => logMessage(`❌ Erreur OTP : ${err.message}`));
   } else {
