@@ -1,7 +1,9 @@
 <template>
     <div>
-      <input ref="otpInput" v-model="otpCode" autocomplete="one-time-code"
-        placeholder="Entrez le code OTP" />
+        <form>
+            <input autocomplete="one-time-code" placeholder="OTP" inputmode="numeric" required/>
+            <input type="submit">
+        </form>
     </div>
   </template>
 
@@ -9,35 +11,31 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const otpCode = ref('');
-let abortController = null;
+const abortController = null;
 
 const startOTPListener = () => {
-  if (!('OTPCredential' in window)) {
-    console.warn('WebOTP API non supportée');
-    return;
-  }
-
-  abortController = new AbortController();
-
-  navigator.credentials
-    .get({
-      otp: { transport: ['sms'] },
-      signal: abortController.signal,
-    })
-    .then((otp) => {
-      if (otp && otp.code) {
-        console.log('Code OTP reçu:', otp.code);
-        otpCode.value = otp.code;
-      } else {
-        console.warn('OTP reçu mais invalide:', otp);
+  if ('OTPCredential' in window) {
+    window.addEventListener('DOMContentLoaded', (e) => {
+      const input = document.querySelector('input[autocomplete="one-time-code"]');
+      if (!input) return;
+      const ac = new AbortController();
+      const form = input.closest('form');
+      if (form) {
+        form.addEventListener('submit', (event) => {
+          ac.abort();
+        });
       }
-    })
-    .catch((err) => {
-      console.error('Erreur WebOTP:', err);
+      navigator.credentials.get({
+        otp: { transport: ['sms'] },
+        signal: ac.signal,
+      }).then((otp) => {
+        input.value = otp.code;
+        if (form) form.submit();
+      }).catch((err) => {
+        console.log(err);
+      });
     });
-
-  // Arrêter l'écoute après 60 secondes
-  setTimeout(() => abortController?.abort(), 60_000);
+  }
 };
 
 onMounted(() => {
