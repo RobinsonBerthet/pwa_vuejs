@@ -8,6 +8,7 @@
   <CameraVue />
   <PositionVue />
   <BatteriePower />
+  <SmsOTP />
   <PhoneCall />
 
 </template>
@@ -18,6 +19,7 @@ import CameraVue from '@/components/CameraVue.vue'; // @ is an alias to /src
 import PositionVue from '@/components/PositionVue.vue';
 import BatteriePower from '@/components/BatteriePower.vue';
 import PhoneCall from '@/components/PhoneCall.vue';
+import SmsOTP from '@/components/SmsOTP.vue';
 
 export default defineComponent({
   name: 'HomeView',
@@ -26,6 +28,7 @@ export default defineComponent({
     PositionVue,
     BatteriePower,
     PhoneCall,
+    SmsOTP,
   },
 });
 </script>
