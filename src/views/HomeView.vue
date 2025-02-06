@@ -5,11 +5,11 @@
       Page d'accueil test1
     </p>
   </div>
-  <CameraVue />
+  <!-- <CameraVue />
   <PositionVue />
-  <BatteriePower />
+  <BatteriePower /> -->
   <SmsOTP />
-  <PhoneCall />
+  <!-- <PhoneCall /> -->
 
 </template>
 
