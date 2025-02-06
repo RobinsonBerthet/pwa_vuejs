@@ -1,10 +1,15 @@
 <template>
   <div>
     <form>
-      <input v-model="otpCode" autocomplete="one-time-code"
-      ref="otpInput" placeholder="OTP" required />
+      <input v-model="otpCode" autocomplete="one-time-code" ref="otpInput"
+      placeholder="OTP" required />
       <input type="submit">
     </form>
+
+    <!-- Affichage des logs pour debug sur mobile -->
+    <div v-for="log in logs" :key="log" style="background: #eee; padding: 5px; margin: 2px;">
+      {{ log }}
+    </div>
   </div>
 </template>
 
@@ -15,34 +20,45 @@ import {
 
 const otpCode = ref('');
 const otpInput = ref(null);
+const logs = ref([]);
 let abortController;
 
+// Fonction pour ajouter un log et l'afficher à l'écran
+const logMessage = (message) => {
+  console.log(message);
+  logs.value.push(message);
+};
+
 const startOTPListener = () => {
+  logMessage('📡 Détection OTP en cours...');
+
   if ('OTPCredential' in window) {
+    logMessage('✅ API OTPCredential détectée !');
+
     abortController = new AbortController();
     const { signal } = abortController;
 
     navigator.credentials.get({ otp: { transport: ['sms'] }, signal })
       .then(async (otp) => {
-        console.log('OTP reçu :', otp.code); // Vérification dans la console
+        logMessage(`🎉 OTP reçu : ${otp.code}`);
+
         otpCode.value = otp.code;
 
-        await nextTick(); // Assure que Vue met bien à jour le DOM
+        await nextTick(); // S'assurer que le DOM est mis à jour
 
         if (otpInput.value) {
-          otpInput.value.value = otp.code; // Remplit directement l'input
-          otpInput.value.focus(); // Donne le focus pour forcer l'affichage
+          otpInput.value.value = otp.code;
+          otpInput.value.focus();
+          logMessage(`📝 Input rempli avec OTP : ${otpInput.value.value}`);
+        } else {
+          logMessage('⚠️ Ref otpInput non définie !');
         }
-
-        setTimeout(() => {
-          if (otpInput.value && otpInput.value.value !== otp.code) {
-            otpInput.value.value = otp.code; // Réassigne après un court délai
-          }
-        }, 100);
 
         alert(`Code OTP reçu : ${otp.code}`);
       })
-      .catch((err) => console.log('Erreur OTP :', err));
+      .catch((err) => logMessage(`❌ Erreur OTP : ${err.message}`));
+  } else {
+    logMessage('🚫 API OTPCredential non supportée sur cet appareil.');
   }
 };
 
