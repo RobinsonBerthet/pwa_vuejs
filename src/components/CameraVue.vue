@@ -3,13 +3,13 @@
     <video ref="video" autoplay playsinline class="camera-view">
       <track kind="captions" label="Aucune légende disponible" />
     </video>
-    <canvas ref="canvas" class="camera-canvas"></canvas>
+    <canvas ref="canvas" class="camera-canvas" v-show="false"></canvas>
 
     <div class="controls">
       <button @click="startCamera">Activer la caméra</button>
       <button :disabled="!cameraActive" @click="capturePhoto">Prendre une photo</button>
-      <button v-if="photo" @click="savePhoto">Enregistrer la photo</button>
-      <button v-if="photos.length > 0" @click="clearPhotos">Supprimer toutes les photos</button>
+      <button class="delete-button" v-if="photos.length > 0"
+        @click="clearPhotos">Supprimer toutes les photos</button>
     </div>
 
     <div class="photo-gallery">
@@ -19,7 +19,7 @@
         @mouseover="hoveredPhoto = index" @mouseleave="hoveredPhoto = null"
         @focusin="hoveredPhoto = index" @focusout="hoveredPhoto = null">
           <img :src="photo" class="photo-thumbnail" :alt="'Photo enregistrée ' + (index + 1)" />
-          <button v-if="hoveredPhoto === index" class="delete-button" @click="deletePhoto(index)">
+          <button v-if="hoveredPhoto === index" class="deletePhoto" @click="deletePhoto(index)">
             ❌
           </button>
         </div>
@@ -29,115 +29,116 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CameraVue',
-  data() {
-    return {
-      photo: null,
-      photos: [],
-      stream: null,
-      hoveredPhoto: null,
-      cameraActive: false,
-    };
-  },
-  methods: {
-    async startCamera() {
-      try {
-        this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        this.$refs.video.srcObject = this.stream;
-        this.cameraActive = true;
-      } catch (error) {
-        console.error('Erreur lors de l’activation de la caméra :', error);
-        alert('Impossible d’accéder à la caméra.');
-      }
-    },
-    capturePhoto() {
-      if (!this.cameraActive) return;
-      const { video, canvas } = this.$refs;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      this.photo = canvas.toDataURL('image/png');
+<script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-      this.showNotification();
-    },
-    savePhoto() {
-      if (this.photo) {
-        try {
-          const updatedPhotos = [...this.photos, this.photo];
-          localStorage.setItem('photos', JSON.stringify(updatedPhotos));
-          this.photos = updatedPhotos;
-          alert('Photo enregistrée avec succès !');
-        } catch (error) {
-          if (error.name === 'QuotaExceededError') {
-            alert('Stockage plein ! Veuillez supprimer des photos avant d’en enregistrer de nouvelles.');
-          } else {
-            console.error('Erreur lors de l’enregistrement de la photo :', error);
-            alert('Une erreur est survenue lors de l’enregistrement.');
-          }
-        }
-      }
-    },
-    deletePhoto(index) {
-      this.photos.splice(index, 1);
-      localStorage.setItem('photos', JSON.stringify(this.photos));
-    },
-    loadPhotos() {
-      const storedPhotos = localStorage.getItem('photos');
-      if (storedPhotos) {
-        this.photos = JSON.parse(storedPhotos);
-      }
-    },
-    clearPhotos() {
-      localStorage.removeItem('photos');
-      this.photos = [];
-      alert('Toutes les photos ont été supprimées.');
-    },
-    stopCamera() {
-      if (this.stream) {
-        this.stream.getTracks().forEach((track) => track.stop());
-        this.stream = null;
-        this.cameraActive = false;
-      }
-    },
-    async requestNotificationPermission() {
-      if (!('Notification' in window)) return false;
-      if (Notification.permission === 'granted') return true;
-      if (Notification.permission !== 'denied') {
-        const permission = await Notification.requestPermission();
-        return permission === 'granted';
-      }
-      return false;
-    },
-    async showNotification() {
-      if (await this.requestNotificationPermission()) {
-        // eslint-disable-next-line no-new
-        new Notification('Photo prise !', {
-          body: 'Votre photo a été capturée avec succès.',
-          icon: this.photo,
-        });
+const video = ref<HTMLVideoElement | null>(null);
+const canvas = ref<HTMLCanvasElement | null>(null);
+const photo = ref<string | null>(null);
+const photos = ref<string[]>([]);
+const stream = ref<MediaStream | null>(null);
+const hoveredPhoto = ref<number | null>(null);
+const cameraActive = ref<boolean>(false);
 
-        if ('vibrate' in navigator) {
-          navigator.vibrate([500, 200, 500]);
-        } else {
-          console.log('La vibration n\'est pas supportée sur cet appareil.');
-        }
-      } else {
-        alert('Votre appareil ne supporte pas la vibration.');
-      }
-    },
-
-  },
-  mounted() {
-    this.requestNotificationPermission();
-    this.loadPhotos();
-  },
-  beforeUnmount() {
-    this.stopCamera();
-  },
+const startCamera = async () => {
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia({ video: true });
+    if (video.value) {
+      video.value.srcObject = stream.value;
+    }
+    cameraActive.value = true;
+  } catch (error) {
+    console.error('Erreur lors de l’activation de la caméra :', error);
+    alert('Impossible d’accéder à la caméra.');
+  }
 };
+
+const requestNotificationPermission = async (): Promise<boolean> => {
+  if (!('Notification' in window)) return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+  return false;
+};
+
+const showNotification = async () => {
+  if (await requestNotificationPermission() && photo.value) {
+    const notification = new Notification('Photo prise !', {
+      body: 'Votre photo a été capturée avec succès.',
+      icon: photo.value,
+    });
+    if ('vibrate' in navigator) {
+      navigator.vibrate([500, 200, 500]);
+    } else {
+      console.log('La vibration n\'est pas supportée sur cet appareil.');
+    }
+  } else {
+    alert('Votre appareil ne supporte pas la vibration.');
+  }
+};
+
+const savePhoto = () => {
+  if (photo.value) {
+    try {
+      const updatedPhotos = [...photos.value, photo.value];
+      localStorage.setItem('photos', JSON.stringify(updatedPhotos));
+      photos.value = updatedPhotos;
+      showNotification();
+    } catch (error) {
+      console.error('Erreur lors de l’enregistrement de la photo :', error);
+      alert('Une erreur est survenue lors de l’enregistrement.');
+    }
+  }
+};
+
+const capturePhoto = () => {
+  if (!cameraActive.value || !video.value || !canvas.value) return;
+  canvas.value.width = video.value.videoWidth;
+  canvas.value.height = video.value.videoHeight;
+  const context = canvas.value.getContext('2d');
+  if (context) {
+    context.drawImage(video.value, 0, 0, canvas.value.width, canvas.value.height);
+    photo.value = canvas.value.toDataURL('image/png');
+  }
+  savePhoto();
+};
+
+const deletePhoto = (index: number) => {
+  photos.value.splice(index, 1);
+  localStorage.setItem('photos', JSON.stringify(photos.value));
+};
+
+const loadPhotos = () => {
+  const storedPhotos = localStorage.getItem('photos');
+  if (storedPhotos) {
+    photos.value = JSON.parse(storedPhotos);
+  }
+};
+
+const clearPhotos = () => {
+  localStorage.removeItem('photos');
+  photos.value = [];
+  alert('Toutes les photos ont été supprimées.');
+};
+
+const stopCamera = () => {
+  if (stream.value) {
+    stream.value.getTracks().forEach((track) => track.stop());
+    stream.value = null;
+    cameraActive.value = false;
+  }
+};
+
+onMounted(() => {
+  requestNotificationPermission();
+  loadPhotos();
+});
+
+onBeforeUnmount(() => {
+  stopCamera();
+});
 </script>
 
 <style scoped>
@@ -151,9 +152,10 @@ export default {
 
 .camera-view {
   width: 100%;
+  border-radius: 1em;
   max-width: 600px;
   height: auto;
-  border: 1px solid #ccc;
+  border: 3px solid rgb(0, 251, 155);
   margin-bottom: 10px;
 }
 
@@ -187,16 +189,26 @@ export default {
   border-radius: 5px;
 }
 
-.delete-button {
+.deletePhoto {
   position: absolute;
   top: 5px;
   right: 5px;
-  background: rgba(255, 0, 0, 0.8);
+  background: rgba(255, 255, 255, 0.67);
   color: white;
   border: none;
   padding: 5px;
   cursor: pointer;
   border-radius: 50%;
+  font-size: 14px;
+}
+
+.delete-button {
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 0.5em;
   font-size: 14px;
 }
 </style>

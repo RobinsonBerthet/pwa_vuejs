@@ -5,35 +5,33 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PositionVue',
-  data() {
-    return {
-      position: null, // Stocke la position géographique
-    };
-  },
-  methods: {
-    async getPosition() {
-      if (!navigator.geolocation) {
-        alert('La géolocalisation n\'est pas supportée par votre navigateur.');
-        return;
-      }
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.position = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          };
-        },
-        (error) => {
-          // console.error('Erreur lors de la récupération de la position :', error);
-          alert(`Erreur : ${this.getGeolocationErrorMessage(error)}`);
-        },
-      );
-    },
-    getGeolocationErrorMessage(error) {
+interface Position {
+  latitude: number;
+  longitude: number;
+}
+
+interface GeolocationPositionError {
+  code: number;
+  PERMISSION_DENIED: number;
+  POSITION_UNAVAILABLE: number;
+  TIMEOUT: number;
+}
+interface GeolocationPosition {
+  coords: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+export default defineComponent({
+  name: 'PositionVue',
+  setup() {
+    const position = ref<Position | null>(null);
+
+    const getGeolocationErrorMessage = (error: GeolocationPositionError): string => {
       switch (error.code) {
         case error.PERMISSION_DENIED:
           return 'Vous avez refusé l\'accès à la localisation.';
@@ -44,12 +42,33 @@ export default {
         default:
           return 'Une erreur inconnue est survenue.';
       }
-    },
+    };
+
+    const getPosition = async (): Promise<void> => {
+      if (!navigator.geolocation) {
+        alert('La géolocalisation n\'est pas supportée par votre navigateur.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos: GeolocationPosition) => {
+          position.value = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          };
+        },
+        (error: GeolocationPositionError) => {
+          alert(`Erreur : ${getGeolocationErrorMessage(error)}`);
+        },
+      );
+    };
+
+    return {
+      position,
+      getPosition,
+    };
   },
-  mounted() {
-    this.getPosition(); // Tente d'obtenir la position dès que le composant est monté
-  },
-};
+});
 </script>
 
 <style scoped>
