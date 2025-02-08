@@ -3,7 +3,7 @@ name: Deploy Vue.js PWA to Debian 12 Server
 on:
   push:
     branches:
-      - main  # Remplace 'main' par ta branche principale si nécessaire
+      - main
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # Remplace par la version de Node.js que tu utilises
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
@@ -24,7 +24,17 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to server
+      - name: Clean old dist folder on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            rm -rf /var/www/dist/*
+            echo "Ancien contenu de /var/www/dist supprimé"
+
+      - name: Deploy new build to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_IP }}
@@ -32,4 +42,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/*"
           target: "/var/www/dist"
-          rm: true  # Supprime les anciens fichiers avant de copier les nouveaux
+          strip_components: 1
