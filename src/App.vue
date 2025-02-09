@@ -137,6 +137,18 @@ nav a {
   transition: background 0.3s;
   margin-left: 20px;
 }
+.navLinksBtns {
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* Centrer horizontalement */
+  text-decoration: none; /* Supprime le soulignement du texte */
+  color: inherit; /* Conserve la couleur du texte par défaut */
+}
+
+.navLinksBtns span {
+  vertical-align: middle;
+  margin-left: 0.2em;
+}
 
 /* Largeur de la scrollbar */
 ::-webkit-scrollbar {
