@@ -1,0 +1,32 @@
+{
+    "name": "Robinson's PWA",
+    "short_name": "Robinson's PWA",
+    "theme_color": "#00fb9b",
+    "icons": [
+        {
+            "src": "./img/icons/portable2.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icons/portable.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icons/portable2.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "./img/icons/portable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#000000"
+}
