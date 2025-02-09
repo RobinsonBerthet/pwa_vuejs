@@ -73,9 +73,10 @@ nav {
 }
 
 nav .titlePwa {
+  font-family: "Caveat", serif;
   color: rgb(0, 251, 155);
   text-decoration: none;
-  font-size: 18px;
+  font-size: 25px;
   transition: background 0.3s;
   margin-right: auto; /* Pousse les nav-links à droite */
 }
@@ -147,7 +148,9 @@ nav a {
 
 .navLinksBtns span {
   vertical-align: middle;
+  text-align: center;
   margin-left: 0.2em;
+  margin: auto;
 }
 
 /* Largeur de la scrollbar */
@@ -175,6 +178,7 @@ nav a {
 .bottomNavBar {
   display: none;
   position: fixed;
+  z-index: 5;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -192,7 +196,7 @@ nav a {
   text-decoration: none;
   box-sizing: border-box;
   width: 20%;
-  padding: 10px;
+  padding:0px;
   border-radius: 0.4em;
   transition: background 0.3s;
 }
@@ -204,6 +208,11 @@ nav a {
   }
   .bottomNavBar {
     display: flex;
+  }
+    .navLinksBtns {
+    font-size: 10px; /* Réduit la taille du texte */
+    border-radius: 0.4em;
+
   }
 }
 
