@@ -9,21 +9,7 @@
 .battery-status {
   margin-top: 10px;
   font-size: 14px;
-  color: #333;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-  text-decoration: none;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+  color: #ffffff;
 }
 
 .app-footer {

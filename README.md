@@ -1,24 +1,43 @@
-# vue-project
+# 🏠 Bienvenue sur ma PWA en Vue.js
 
-## Project setup
-```
+## ✨ Installation du projet
+
+```bash
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## 🔄 Démarrage en mode développement
+
+```bash
+npm run dev
 ```
+
+## 🛠️ Démarrage en mode serveur
+
+```bash
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
+## 🌟 Build pour la production
+
+```bash
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+## 🌐 Fonctionnalités
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- 📸 Prise de photo
+- 📞 Appel téléphonique
+- 🌍 Prise de position GPS
+- ✅ Vérification OTP
+- 📢 Chat en temps réel via WebSocket (socket.io) sur un serveur distant
+- ⚡ Connaissance du pourcentage de batterie de l'appareil
+- ❌🌐 Fonctionnement en mode hors ligne
+
+## 💻 Serveur en production
+
+[PWA en ligne](https://robinson.berthet.angers.mds-project.fr/)
+
+
+
+ 
