@@ -73,7 +73,7 @@ nav {
 }
 
 nav .titlePwa {
-  font-family: "Caveat", serif;
+  font-family: "Caveat", serif !important;
   color: rgb(0, 251, 155);
   text-decoration: none;
   font-size: 25px;
