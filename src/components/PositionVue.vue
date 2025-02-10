@@ -1,7 +1,8 @@
 <template>
   <div class='position-container'>
-    <button @click='getPosition'>Obtenir ma position</button>
-    <p v-if='position'>Position : {{ position.latitude }}, {{ position.longitude }}</p>
+    <button class="btn" @click='getPosition'>Obtenir ma position</button>
+    <p class="position-val"
+    v-if='position'>Votre Position : {{ position.latitude }}, {{ position.longitude }}</p>
   </div>
 </template>
 
@@ -80,10 +81,19 @@ export default defineComponent({
   margin: 20px;
 }
 
-button {
+.btn {
   margin: 10px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  background-color: rgb(38, 99, 221);
+  border-radius: 0.5em;
+  color: white;
+
 }
+
+.position-val{
+  color: white;
+}
+
 </style>

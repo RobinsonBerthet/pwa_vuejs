@@ -1,5 +1,7 @@
 <template>
   <div class="not-found">
+    <p class="err">404</p>
+
     <p class="message">Page non trouvée</p>
     <a href="/" class="home-link">Retour à l'accueil</a>
   </div>
@@ -21,7 +23,7 @@ export default defineComponent({
   align-items: center;
   height: 100vh;
   background-color: black;
-  color: #00ff00;
+  color: rgb(0, 251, 155);
   font-family: Arial, sans-serif;
   text-align: center;
 }
@@ -32,18 +34,24 @@ export default defineComponent({
   margin-bottom: 20px;
 }
 
+.err {
+  font-size: 10rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
 .home-link {
   font-size: 1.2rem;
-  color: #00ff00;
+  color: rgb(0, 251, 155);
   text-decoration: none;
-  border: 2px solid #00ff00;
+  border: 2px solid rgb(0, 251, 155);
   padding: 10px 20px;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .home-link:hover {
-  background-color: #00ff00;
+  background-color: rgb(0, 251, 155);
   color: black;
 }
 </style>

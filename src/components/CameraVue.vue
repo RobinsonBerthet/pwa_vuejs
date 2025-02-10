@@ -8,16 +8,16 @@
     <div class="controls">
       <button @click="startCamera">Activer la caméra</button>
       <button :disabled="!cameraActive" @click="capturePhoto">Prendre une photo</button>
-      <button class="delete-button" v-if="photos.length > 0"
-        @click="clearPhotos">Supprimer toutes les photos</button>
     </div>
+    <button class="delete-button"
+    v-if="photos.length > 0" @click="clearPhotos">Supprimer toutes les photos</button>
 
     <div class="photo-gallery">
       <h3>Photos enregistrées :</h3>
       <div v-if="photos.length > 0" class="photo-grid">
         <div v-for="(photo, index) in photos" :key="index" class="photo-wrapper"
-        @mouseover="hoveredPhoto = index" @mouseleave="hoveredPhoto = null"
-        @focusin="hoveredPhoto = index" @focusout="hoveredPhoto = null">
+          @mouseover="hoveredPhoto = index" @mouseleave="hoveredPhoto = null"
+          @focusin="hoveredPhoto = index" @focusout="hoveredPhoto = null">
           <img :src="photo" class="photo-thumbnail" :alt="'Photo enregistrée ' + (index + 1)" />
           <button v-if="hoveredPhoto === index" class="deletePhoto" @click="deletePhoto(index)">
             ❌
@@ -69,13 +69,14 @@ const showNotification = async () => {
       body: 'Votre photo a été capturée avec succès.',
       icon: photo.value,
     });
+
+    notification.onclick = () => {
+      console.log('Notification cliquée');
+    };
+
     if ('vibrate' in navigator) {
       navigator.vibrate([500, 200, 500]);
-    } else {
-      console.log('La vibration n\'est pas supportée sur cet appareil.');
     }
-  } else {
-    alert('Votre appareil ne supporte pas la vibration.');
   }
 };
 
@@ -131,8 +132,8 @@ const stopCamera = () => {
   }
 };
 
-onMounted(() => {
-  requestNotificationPermission();
+onMounted(async () => {
+  await requestNotificationPermission();
   loadPhotos();
 });
 
@@ -160,10 +161,31 @@ onBeforeUnmount(() => {
 }
 
 .controls button {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 1em;
   cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.controls button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+.controls button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  transform: scale(1.05);
+}
+
+.controls button:active {
+  transform: scale(0.95);
 }
 
 .photo-gallery {

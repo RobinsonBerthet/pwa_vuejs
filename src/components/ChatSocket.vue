@@ -39,7 +39,7 @@ export default defineComponent({
 
     const joinRoom = () => {
       console.log('Tentative de connexion...');
-      socket.value = io('http://mohammedelmehdi.makhlouk.angers.mds-project.fr:40220', {
+      socket.value = io('https://mohammedelmehdi.makhlouk.angers.mds-project.fr:40220', {
         transports: ['websocket'],
       });
 
