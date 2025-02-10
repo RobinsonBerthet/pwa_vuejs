@@ -25,15 +25,13 @@ const startOTPListener = (): void => {
     const { signal } = abortController;
 
     navigator.credentials.get({ otp: { transport: ['sms'] }, signal } as any)
-    .then((otp) => {
-      if (otp && 'code' in otp) {
-        otpCode.value = (otp as any).code;
-        alert(`Code OTP reçu : ${(otp as any).code}`);
-      }
-    })
-    .catch((err) => console.error('Erreur OTP :', err));
-
-
+      .then((otp) => {
+        if (otp && 'code' in otp) {
+          otpCode.value = (otp as any).code;
+          alert(`Code OTP reçu : ${(otp as any).code}`);
+        }
+      })
+      .catch((err) => console.error('Erreur OTP :', err));
   }
 };
 
