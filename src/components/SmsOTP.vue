@@ -1,36 +1,42 @@
 <template>
   <div>
-    <form>
+    <form @submit.prevent="handleSubmit">
       <br />
       <input v-model="otpCode" autocomplete="one-time-code" placeholder="OTP" required/>
       <br/>
       <br/>
-      <input type="submit">
+      <input type="submit" value="Envoyer">
     </form>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const otpCode = ref('');
-let abortController;
+const otpCode = ref<string>('');
+let abortController: AbortController | null = null;
 
-const startOTPListener = () => {
+const startOTPListener = (): void => {
   if ('OTPCredential' in window) {
-    const input = document.querySelector('input[autocomplete="one-time-code"]');
+    const input = document.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]');
     if (!input) return;
 
     abortController = new AbortController();
     const { signal } = abortController;
 
-    navigator.credentials.get({ otp: { transport: ['sms'] }, signal })
+    navigator.credentials.get<{ code: string }>({ otp: { transport: ['sms'] }, signal })
       .then((otp) => {
-        otpCode.value = otp.code;
-        alert(`Code OTP reçu : ${otp.code}`);
+        if (otp) {
+          otpCode.value = otp.code;
+          alert(`Code OTP reçu : ${otp.code}`);
+        }
       })
-      .catch((err) => console.log('Erreur OTP :', err));
+      .catch((err) => console.error('Erreur OTP :', err));
   }
+};
+
+const handleSubmit = (): void => {
+  alert(`Code soumis : ${otpCode.value}`);
 };
 
 onMounted(() => {
@@ -42,7 +48,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 form {
   display: flex;
   flex-direction: column;
